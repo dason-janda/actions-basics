@@ -1,6 +1,8 @@
 name: hello world
 
 on:
+  schedule:
+    - cron: '0 12 * * *'
   push:
       branches:
           - main
@@ -10,6 +12,26 @@ jobs:
       runs-on: ubuntu-latest
 
       steps:
-      - uses: actions/checkout@v2
+
+      - uses: actions/checkout@v4
+
       - name: run echo
         run: echo "Hello, world!"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run addition tests
+        run: python -m unittest -v test_addition.py
+
+      - name: Lint code
+        run: |
+          pip install pylint
+          pylint --exit-zero addition.py test_addition.py
+
+      - name: Output random number
+        run: |
+          RANDOM_NUM=$((RANDOM % 100 + 1))
+          echo "Generated random number: $RANDOM_NUM"
